@@ -1,0 +1,476 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		FF0100012D00000100000001 /* Anh2DApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0200012D00000100000001 /* Anh2DApp.swift */; };
+		FF0100022D00000100000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0200022D00000100000001 /* ContentView.swift */; };
+		FF0100032D00000100000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FF0200042D00000100000001 /* Assets.xcassets */; };
+		FF0100042D00000100000001 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0200052D00000100000001 /* Enums.swift */; };
+		FF0100052D00000100000001 /* Layer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0200062D00000100000001 /* Layer.swift */; };
+		FF0100062D00000100000001 /* Frame.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0200072D00000100000001 /* Frame.swift */; };
+		FF0100072D00000100000001 /* AudioTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0200082D00000100000001 /* AudioTrack.swift */; };
+		FF0100082D00000100000001 /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0200092D00000100000001 /* Project.swift */; };
+		FF0100092D00000100000001 /* StylusTouchHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF02000A2D00000100000001 /* StylusTouchHelper.swift */; };
+		FF01000A2D00000100000001 /* FloodFill.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF02000B2D00000100000001 /* FloodFill.swift */; };
+		FF01000B2D00000100000001 /* LassoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF02000C2D00000100000001 /* LassoManager.swift */; };
+		FF01000C2D00000100000001 /* RulerOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF02000D2D00000100000001 /* RulerOverlay.swift */; };
+		FF01000D2D00000100000001 /* CanvasDrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF02000E2D00000100000001 /* CanvasDrawingView.swift */; };
+		FF01000E2D00000100000001 /* TimelineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF02000F2D00000100000001 /* TimelineManager.swift */; };
+		FF01000F2D00000100000001 /* FrameThumbnailRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0200102D00000100000001 /* FrameThumbnailRenderer.swift */; };
+		FF0100102D00000100000001 /* AudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0200112D00000100000001 /* AudioEngine.swift */; };
+		FF0100112D00000100000001 /* AiVoiceMaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0200122D00000100000001 /* AiVoiceMaker.swift */; };
+		FF0100122D00000100000001 /* MagicCutEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0200132D00000100000001 /* MagicCutEngine.swift */; };
+		FF0100132D00000100000001 /* AnimatedGifEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0200142D00000100000001 /* AnimatedGifEncoder.swift */; };
+		FF0100142D00000100000001 /* MovieExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0200152D00000100000001 /* MovieExporter.swift */; };
+		FF0100152D00000100000001 /* TopNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0200162D00000100000001 /* TopNavigationBar.swift */; };
+		FF0100162D00000100000001 /* ToolDockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0200172D00000100000001 /* ToolDockView.swift */; };
+		FF0100172D00000100000001 /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0200182D00000100000001 /* TimelineView.swift */; };
+		FF0100182D00000100000001 /* AudioStudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0200192D00000100000001 /* AudioStudioView.swift */; };
+		FF0100192D00000100000001 /* LayerDrawerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF02001A2D00000100000001 /* LayerDrawerView.swift */; };
+		FF01001A2D00000100000001 /* CanvasSettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF02001B2D00000100000001 /* CanvasSettingsSheet.swift */; };
+		FF01001B2D00000100000001 /* ChallengesDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF02001C2D00000100000001 /* ChallengesDialog.swift */; };
+		FF01001C2D00000100000001 /* DialogSheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF02001D2D00000100000001 /* DialogSheets.swift */; };
+		FF01001D2D00000100000001 /* ExportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF02001E2D00000100000001 /* ExportSheet.swift */; };
+		FF01001E2D00000100000001 /* ProjectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF02001F2D00000100000001 /* ProjectViewModel.swift */; };
+		FF01001F2D00000100000001 /* Color+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0200202D00000100000001 /* Color+Extensions.swift */; };
+		FF0100202D00000100000001 /* UIImage+Effects.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0200212D00000100000001 /* UIImage+Effects.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		FF0000012D00000100000001 /* Anh2D-IOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Anh2D-IOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF0200012D00000100000001 /* Anh2DApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Anh2DApp.swift; sourceTree = "<group>"; };
+		FF0200022D00000100000001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		FF0200032D00000100000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FF0200042D00000100000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		FF0200052D00000100000001 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
+		FF0200062D00000100000001 /* Layer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Layer.swift; sourceTree = "<group>"; };
+		FF0200072D00000100000001 /* Frame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frame.swift; sourceTree = "<group>"; };
+		FF0200082D00000100000001 /* AudioTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioTrack.swift; sourceTree = "<group>"; };
+		FF0200092D00000100000001 /* Project.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
+		FF02000A2D00000100000001 /* StylusTouchHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StylusTouchHelper.swift; sourceTree = "<group>"; };
+		FF02000B2D00000100000001 /* FloodFill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloodFill.swift; sourceTree = "<group>"; };
+		FF02000C2D00000100000001 /* LassoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LassoManager.swift; sourceTree = "<group>"; };
+		FF02000D2D00000100000001 /* RulerOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RulerOverlay.swift; sourceTree = "<group>"; };
+		FF02000E2D00000100000001 /* CanvasDrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasDrawingView.swift; sourceTree = "<group>"; };
+		FF02000F2D00000100000001 /* TimelineManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineManager.swift; sourceTree = "<group>"; };
+		FF0200102D00000100000001 /* FrameThumbnailRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameThumbnailRenderer.swift; sourceTree = "<group>"; };
+		FF0200112D00000100000001 /* AudioEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEngine.swift; sourceTree = "<group>"; };
+		FF0200122D00000100000001 /* AiVoiceMaker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AiVoiceMaker.swift; sourceTree = "<group>"; };
+		FF0200132D00000100000001 /* MagicCutEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagicCutEngine.swift; sourceTree = "<group>"; };
+		FF0200142D00000100000001 /* AnimatedGifEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedGifEncoder.swift; sourceTree = "<group>"; };
+		FF0200152D00000100000001 /* MovieExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieExporter.swift; sourceTree = "<group>"; };
+		FF0200162D00000100000001 /* TopNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopNavigationBar.swift; sourceTree = "<group>"; };
+		FF0200172D00000100000001 /* ToolDockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolDockView.swift; sourceTree = "<group>"; };
+		FF0200182D00000100000001 /* TimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
+		FF0200192D00000100000001 /* AudioStudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioStudioView.swift; sourceTree = "<group>"; };
+		FF02001A2D00000100000001 /* LayerDrawerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayerDrawerView.swift; sourceTree = "<group>"; };
+		FF02001B2D00000100000001 /* CanvasSettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasSettingsSheet.swift; sourceTree = "<group>"; };
+		FF02001C2D00000100000001 /* ChallengesDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengesDialog.swift; sourceTree = "<group>"; };
+		FF02001D2D00000100000001 /* DialogSheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogSheets.swift; sourceTree = "<group>"; };
+		FF02001E2D00000100000001 /* ExportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportSheet.swift; sourceTree = "<group>"; };
+		FF02001F2D00000100000001 /* ProjectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectViewModel.swift; sourceTree = "<group>"; };
+		FF0200202D00000100000001 /* Color+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extensions.swift"; sourceTree = "<group>"; };
+		FF0200212D00000100000001 /* UIImage+Effects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Effects.swift"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FF0000022D00000100000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		FF0000032D00000100000001 = {
+			isa = PBXGroup;
+			children = (
+				FF0000042D00000100000001 /* Anh2D-IOS */,
+				FF0000052D00000100000001 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		FF0000042D00000100000001 /* Anh2D-IOS */ = {
+			isa = PBXGroup;
+			children = (
+				FF0000062D00000100000001 /* App */,
+				FF0000072D00000100000001 /* Models */,
+				FF0000082D00000100000001 /* Drawing */,
+				FF0000092D00000100000001 /* Timeline */,
+				FF00000A2D00000100000001 /* Audio */,
+				FF00000B2D00000100000001 /* AI */,
+				FF00000C2D00000100000001 /* Export */,
+				FF00000D2D00000100000001 /* Views */,
+				FF00000E2D00000100000001 /* ViewModels */,
+				FF00000F2D00000100000001 /* Utilities */,
+				FF0200042D00000100000001 /* Assets.xcassets */,
+			);
+			path = "Anh2D-IOS";
+			sourceTree = "<group>";
+		};
+		FF0000052D00000100000001 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FF0000012D00000100000001 /* Anh2D-IOS.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FF0000062D00000100000001 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				FF0200012D00000100000001 /* Anh2DApp.swift */,
+				FF0200022D00000100000001 /* ContentView.swift */,
+				FF0200032D00000100000001 /* Info.plist */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		FF0000072D00000100000001 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				FF0200052D00000100000001 /* Enums.swift */,
+				FF0200062D00000100000001 /* Layer.swift */,
+				FF0200072D00000100000001 /* Frame.swift */,
+				FF0200082D00000100000001 /* AudioTrack.swift */,
+				FF0200092D00000100000001 /* Project.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		FF0000082D00000100000001 /* Drawing */ = {
+			isa = PBXGroup;
+			children = (
+				FF02000A2D00000100000001 /* StylusTouchHelper.swift */,
+				FF02000B2D00000100000001 /* FloodFill.swift */,
+				FF02000C2D00000100000001 /* LassoManager.swift */,
+				FF02000D2D00000100000001 /* RulerOverlay.swift */,
+				FF02000E2D00000100000001 /* CanvasDrawingView.swift */,
+			);
+			path = Drawing;
+			sourceTree = "<group>";
+		};
+		FF0000092D00000100000001 /* Timeline */ = {
+			isa = PBXGroup;
+			children = (
+				FF02000F2D00000100000001 /* TimelineManager.swift */,
+				FF0200102D00000100000001 /* FrameThumbnailRenderer.swift */,
+			);
+			path = Timeline;
+			sourceTree = "<group>";
+		};
+		FF00000A2D00000100000001 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				FF0200112D00000100000001 /* AudioEngine.swift */,
+				FF0200122D00000100000001 /* AiVoiceMaker.swift */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		FF00000B2D00000100000001 /* AI */ = {
+			isa = PBXGroup;
+			children = (
+				FF0200132D00000100000001 /* MagicCutEngine.swift */,
+			);
+			path = AI;
+			sourceTree = "<group>";
+		};
+		FF00000C2D00000100000001 /* Export */ = {
+			isa = PBXGroup;
+			children = (
+				FF0200142D00000100000001 /* AnimatedGifEncoder.swift */,
+				FF0200152D00000100000001 /* MovieExporter.swift */,
+			);
+			path = Export;
+			sourceTree = "<group>";
+		};
+		FF00000D2D00000100000001 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				FF0200162D00000100000001 /* TopNavigationBar.swift */,
+				FF0200172D00000100000001 /* ToolDockView.swift */,
+				FF0200182D00000100000001 /* TimelineView.swift */,
+				FF0200192D00000100000001 /* AudioStudioView.swift */,
+				FF02001A2D00000100000001 /* LayerDrawerView.swift */,
+				FF02001B2D00000100000001 /* CanvasSettingsSheet.swift */,
+				FF02001C2D00000100000001 /* ChallengesDialog.swift */,
+				FF02001D2D00000100000001 /* DialogSheets.swift */,
+				FF02001E2D00000100000001 /* ExportSheet.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		FF00000E2D00000100000001 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				FF02001F2D00000100000001 /* ProjectViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		FF00000F2D00000100000001 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				FF0200202D00000100000001 /* Color+Extensions.swift */,
+				FF0200212D00000100000001 /* UIImage+Effects.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		FF0000102D00000100000001 /* Anh2D-IOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FF0000142D00000100000001 /* Build configuration list for PBXNativeTarget "Anh2D-IOS" */;
+			buildPhases = (
+				FF0000112D00000100000001 /* Sources */,
+				FF0000022D00000100000001 /* Frameworks */,
+				FF0000122D00000100000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Anh2D-IOS";
+			productName = "Anh2D-IOS";
+			productReference = FF0000012D00000100000001 /* Anh2D-IOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FF0000132D00000100000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					FF0000102D00000100000001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = FF0000152D00000100000001 /* Build configuration list for PBXProject "Anh2D-IOS" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = FF0000032D00000100000001;
+			productRefGroup = FF0000052D00000100000001 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FF0000102D00000100000001 /* Anh2D-IOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		FF0000122D00000100000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF0100032D00000100000001 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FF0000112D00000100000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF0100012D00000100000001 /* Anh2DApp.swift in Sources */,
+				FF0100022D00000100000001 /* ContentView.swift in Sources */,
+				FF0100042D00000100000001 /* Enums.swift in Sources */,
+				FF0100052D00000100000001 /* Layer.swift in Sources */,
+				FF0100062D00000100000001 /* Frame.swift in Sources */,
+				FF0100072D00000100000001 /* AudioTrack.swift in Sources */,
+				FF0100082D00000100000001 /* Project.swift in Sources */,
+				FF0100092D00000100000001 /* StylusTouchHelper.swift in Sources */,
+				FF01000A2D00000100000001 /* FloodFill.swift in Sources */,
+				FF01000B2D00000100000001 /* LassoManager.swift in Sources */,
+				FF01000C2D00000100000001 /* RulerOverlay.swift in Sources */,
+				FF01000D2D00000100000001 /* CanvasDrawingView.swift in Sources */,
+				FF01000E2D00000100000001 /* TimelineManager.swift in Sources */,
+				FF01000F2D00000100000001 /* FrameThumbnailRenderer.swift in Sources */,
+				FF0100102D00000100000001 /* AudioEngine.swift in Sources */,
+				FF0100112D00000100000001 /* AiVoiceMaker.swift in Sources */,
+				FF0100122D00000100000001 /* MagicCutEngine.swift in Sources */,
+				FF0100132D00000100000001 /* AnimatedGifEncoder.swift in Sources */,
+				FF0100142D00000100000001 /* MovieExporter.swift in Sources */,
+				FF0100152D00000100000001 /* TopNavigationBar.swift in Sources */,
+				FF0100162D00000100000001 /* ToolDockView.swift in Sources */,
+				FF0100172D00000100000001 /* TimelineView.swift in Sources */,
+				FF0100182D00000100000001 /* AudioStudioView.swift in Sources */,
+				FF0100192D00000100000001 /* LayerDrawerView.swift in Sources */,
+				FF01001A2D00000100000001 /* CanvasSettingsSheet.swift in Sources */,
+				FF01001B2D00000100000001 /* ChallengesDialog.swift in Sources */,
+				FF01001C2D00000100000001 /* DialogSheets.swift in Sources */,
+				FF01001D2D00000100000001 /* ExportSheet.swift in Sources */,
+				FF01001E2D00000100000001 /* ProjectViewModel.swift in Sources */,
+				FF01001F2D00000100000001 /* Color+Extensions.swift in Sources */,
+				FF0100202D00000100000001 /* UIImage+Effects.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		FF0000162D00000100000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDEFINED_MACROS = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		FF0000172D00000100000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDEFINED_MACROS = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SWIFT_COMPILATION_MODE = "wholemodule";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		FF0000182D00000100000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Anh2D-IOS/App/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "FlipaClip 2D";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.flipaclip.anh2d;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FF0000192D00000100000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Anh2D-IOS/App/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "FlipaClip 2D";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.flipaclip.anh2d;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		FF0000142D00000100000001 /* Build configuration list for PBXNativeTarget "Anh2D-IOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FF0000182D00000100000001 /* Debug */,
+				FF0000192D00000100000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FF0000152D00000100000001 /* Build configuration list for PBXProject "Anh2D-IOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FF0000162D00000100000001 /* Debug */,
+				FF0000172D00000100000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = FF0000132D00000100000001 /* Project object */;
+}
