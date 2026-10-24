@@ -7,16 +7,26 @@ public final class ProjectViewModel: ObservableObject {
     @Published public var currentTool: ToolType = .pen
     @Published public var currentShape: ShapeType = .line
     @Published public var brushColor: Color = .black
-    @Published public var brushSize: CGFloat = 10.0
+    @Published public var brushSize: CGFloat = 8.0
     @Published public var brushOpacity: CGFloat = 1.0
     @Published public var rulerType: RulerType = .none
+    @Published public var isGridVisible: Bool = false
 
     @Published public var isOnionSkinEnabled: Bool = true
     @Published public var onionSkinFramesBefore: Int = 1
     @Published public var onionSkinFramesAfter: Int = 1
-    @Published public var currentLayout: AppLayout = .studio
+    @Published public var onionSkinAlpha: CGFloat = 0.35
+    @Published public var currentLayout: AppLayout = .classic
 
-    // Dialog & Sheet states
+    // Dialog & Popout states (matching ADR)
+    @Published public var showProjectsGallery: Bool = false
+    @Published public var showNewProjectSheet: Bool = false
+    @Published public var showAudioModal: Bool = false
+    @Published public var showSettingsModal: Bool = false
+    @Published public var showFpsModal: Bool = false
+    @Published public var showToolOptionsPopout: Bool = false
+    @Published public var showColorPickerPopout: Bool = false
+
     @Published public var showCanvasSettings: Bool = false
     @Published public var showLayerDrawer: Bool = false
     @Published public var showExportSheet: Bool = false
@@ -40,20 +50,28 @@ public final class ProjectViewModel: ObservableObject {
     @Published public var exportProgress: String = ""
     @Published public var exportedFileURL: URL? = nil
     @Published public var showShareSheet: Bool = false
+    @Published public var exportWithWatermark: Bool = true
 
     // Audio recording state
     @Published public var recordingTrackId: UUID? = nil
+    @Published public var isRecordingMicLive: Bool = false
+
+    // Multiple projects support
+    @Published public var projectsList: [Project] = []
 
     public let drawingView: CanvasDrawingView
     public let timelineManager: TimelineManager
     public let audioEngine: AudioEngine
     public let aiVoiceMaker: AiVoiceMaker
+    public let loc = LocalizationManager.shared
 
     private var cancellables = Set<AnyCancellable>()
 
     public init() {
         let initialProject = Project.createDefault()
         self.project = initialProject
+        self.projectsList = [initialProject, Project.createSampleStickmanProject()]
+
         self.drawingView = CanvasDrawingView(project: initialProject)
         self.timelineManager = TimelineManager(project: initialProject)
         self.audioEngine = AudioEngine()
@@ -82,15 +100,186 @@ public final class ProjectViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Projects Management (matching ADR Gallery)
+    public func switchProject(to target: Project) {
+        project = target
+        drawingView.project = target
+        timelineManager.setProject(target)
+        drawingView.resetViewport()
+        drawingView.setNeedsDisplay()
+        showProjectsGallery = false
+        showToast(loc.t("saved_successfully"))
+    }
+
+    public func createNewProject(title: String, preset: CanvasPreset, fps: Int, bgHex: String) {
+        let newProj = Project.createEmpty(title: title, preset: preset, fps: fps, bgHex: bgHex)
+        projectsList.insert(newProj, at: 0)
+        switchProject(to: newProj)
+        showNewProjectSheet = false
+    }
+
+    public func duplicateProject(target: Project) {
+        let copy = target.duplicate()
+        projectsList.append(copy)
+        showToast("Đã nhân bản \(target.title)")
+    }
+
+    public func deleteProject(target: Project) {
+        guard projectsList.count > 1 else {
+            showToast("Không thể xóa dự án duy nhất!")
+            return
+        }
+        projectsList.removeAll(where: { $0.id == target.id })
+        if project.id == target.id, let first = projectsList.first {
+            switchProject(to: first)
+        }
+        showToast("Đã xóa dự án")
+    }
+
+    public func loadSampleBall() {
+        let ball = Project.createSampleBouncingBallProject()
+        projectsList.insert(ball, at: 0)
+        switchProject(to: ball)
+    }
+
+    public func loadSampleStickman() {
+        let stick = Project.createSampleStickmanProject()
+        projectsList.insert(stick, at: 0)
+        switchProject(to: stick)
+    }
+
+    // MARK: - Viewport & Grid Controls
+    public func zoomFit() {
+        drawingView.resetViewport()
+        showToast(loc.t("fit_to_screen"))
+    }
+
+    public func toggleGrid() {
+        isGridVisible.toggle()
+        drawingView.isGridVisible = isGridVisible
+        drawingView.setNeedsDisplay()
+    }
+
+    // MARK: - Tool Dock Selection & Popouts (matching ADR)
+    public func selectTool(_ tool: ToolType) {
+        if tool == .pen || tool == .pencil || tool == .brush || tool == .highlighter {
+            if currentTool == tool {
+                showToolOptionsPopout.toggle()
+            } else {
+                currentTool = tool
+                showToolOptionsPopout = true
+            }
+            showColorPickerPopout = false
+        } else if tool == .eraser {
+            if currentTool == .eraser {
+                showToolOptionsPopout.toggle()
+            } else {
+                currentTool = .eraser
+                showToolOptionsPopout = true
+            }
+            showColorPickerPopout = false
+        } else if tool == .shapes {
+            if currentTool == .shapes {
+                showToolOptionsPopout.toggle()
+            } else {
+                currentTool = .shapes
+                showToolOptionsPopout = true
+            }
+            showColorPickerPopout = false
+        } else if tool == .text {
+            currentTool = .text
+            showTextPrompt = true
+            showToolOptionsPopout = false
+            showColorPickerPopout = false
+        } else if tool == .bucket {
+            currentTool = .bucket
+            showToolOptionsPopout = false
+            showColorPickerPopout = false
+        } else {
+            currentTool = tool
+            showToolOptionsPopout = false
+            showColorPickerPopout = false
+        }
+    }
+
+    public func toggleColorPicker() {
+        showColorPickerPopout.toggle()
+        if showColorPickerPopout {
+            showToolOptionsPopout = false
+        }
+    }
+
+    public func clearCurrentCanvas() {
+        guard let layer = project.activeLayer, !layer.isLocked, let frame = project.currentFrame else { return }
+        drawingView.saveUndoSnapshot()
+        let blank = UIImage.createBlank(size: project.canvasSize)
+        frame.setImage(blank, for: layer.id)
+        drawingView.setNeedsDisplay()
+        showToast(loc.t("clear_canvas"))
+    }
+
+    // MARK: - Lasso Tools (matching ADR Floating Bar)
+    public func lassoFlipH() {
+        guard drawingView.lassoManager.hasSelection else { return }
+        drawingView.lassoManager.flipHorizontal()
+        drawingView.setNeedsDisplay()
+        showToast(loc.t("lasso_flip_h"))
+    }
+
+    public func lassoDelete() {
+        guard drawingView.lassoManager.hasSelection else { return }
+        drawingView.lassoManager.deleteSelection()
+        drawingView.setNeedsDisplay()
+        showToast(loc.t("lasso_delete"))
+    }
+
+    public func lassoDone() {
+        drawingView.commitLasso()
+        showToast(loc.t("done"))
+    }
+
+    // MARK: - Ruler & Eyedropper Cycling
+    public func cycleRuler() {
+        switch rulerType {
+        case .none: rulerType = .straight
+        case .straight: rulerType = .circle
+        case .circle: rulerType = .square
+        case .square: rulerType = .none
+        }
+        drawingView.rulerOverlay.rulerType = rulerType
+        drawingView.setNeedsDisplay()
+    }
+
+    public func toggleEyedropper() {
+        if currentTool == .eyedropper {
+            currentTool = .pen
+        } else {
+            currentTool = .eyedropper
+            showToast(loc.t("eyedropper"))
+        }
+    }
+
+    // MARK: - Frame Copy / Paste (matching ADR Filmstrip Actions)
+    public func copyCurrentFrame() {
+        timelineManager.copyCurrentFrame()
+        showToast(loc.t("frame_copied"))
+    }
+
+    public func pasteFrame() {
+        if timelineManager.pasteFrame() {
+            showToast(loc.t("frame_pasted"))
+        }
+    }
+
     // MARK: - Undo / Redo
     public func undo() {
         drawingView.undo()
-        showToast("Đã hoàn tác")
+        showToast(loc.t("undo"))
     }
 
     public func redo() {
         drawingView.redo()
-        showToast("Đã làm lại")
+        showToast(loc.t("redo"))
     }
 
     public var canUndo: Bool { drawingView.canUndo }
@@ -102,7 +291,7 @@ public final class ProjectViewModel: ObservableObject {
             showToast("Đã đạt giới hạn tối đa 10 layer (FlipaClip Plus)")
             return
         }
-        let newLayer = Layer(name: "Layer \(project.layers.count + 1)")
+        let newLayer = Layer(name: String(format: loc.t("layer_name"), project.layers.count + 1))
         project.layers.append(newLayer)
         project.activeLayerIndex = project.layers.count - 1
         drawingView.setNeedsDisplay()
@@ -111,7 +300,7 @@ public final class ProjectViewModel: ObservableObject {
 
     public func deleteLayer(at index: Int) {
         guard project.layers.count > 1 else {
-            showToast("Phải giữ lại ít nhất 1 layer")
+            showToast(loc.t("cannot_delete_last_layer"))
             return
         }
         let removed = project.layers.remove(at: index)
@@ -132,7 +321,6 @@ public final class ProjectViewModel: ObservableObject {
         project.layers.insert(duplicated, at: index + 1)
         project.activeLayerIndex = index + 1
 
-        // Copy drawings in all frames
         for frame in project.frames {
             if let img = frame.getImage(for: target.id) {
                 frame.setImage(img, for: duplicated.id)
@@ -142,36 +330,26 @@ public final class ProjectViewModel: ObservableObject {
         showToast("Đã nhân bản \(target.name)")
     }
 
-    // MARK: - Audio Studio
-    public func addAudioTrack() {
-        guard project.audioTracks.count < 6 else {
-            showToast("Bản miễn phí hỗ trợ tối đa 6 audio track")
-            return
-        }
-        let track = AudioTrack(name: "Audio \(project.audioTracks.count + 1)")
-        project.audioTracks.append(track)
-        showToast("Đã thêm \(track.name)")
-    }
-
+    // MARK: - Audio Recorder Modal
     public func toggleVoiceRecording(for track: AudioTrack) {
         if recordingTrackId == track.id {
-            // Stop recording
             var updated = track
-            if let url = audioEngine.stopRecording(for: &updated) {
+            if let _ = audioEngine.stopRecording(for: &updated) {
                 if let idx = project.audioTracks.firstIndex(where: { $0.id == track.id }) {
                     project.audioTracks[idx] = updated
                 }
                 recordingTrackId = nil
-                showToast("Đã thu âm lồng tiếng!")
+                isRecordingMicLive = false
+                showToast(loc.t("voice_recorded"))
             }
         } else {
-            // Start recording
             audioEngine.startRecording(for: track) { [weak self] result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success:
                         self?.recordingTrackId = track.id
-                        self?.showToast("Đang ghi âm...")
+                        self?.isRecordingMicLive = true
+                        self?.showToast(self?.loc.t("recording_live") ?? "Recording...")
                     case .failure(let err):
                         self?.showToast("Lỗi mic: \(err.localizedDescription)")
                     }
@@ -186,10 +364,17 @@ public final class ProjectViewModel: ObservableObject {
             if let idx = project.audioTracks.firstIndex(where: { $0.id == track.id }) {
                 project.audioTracks[idx] = updated
             }
-            showToast("Đã nhập âm thanh vào \(track.name)")
+            showToast("Đã nạp file âm thanh thành công!")
         } else {
-            showToast("Không thể nhập file âm thanh")
+            showToast("Không thể mở file âm thanh")
         }
+    }
+
+    public func removeAudioFromProject() {
+        for i in 0..<project.audioTracks.count {
+            project.audioTracks[i].fileURL = nil
+        }
+        showToast(loc.t("delete_audio"))
     }
 
     public func generateAiVoice(script: String, for track: AudioTrack) {
@@ -211,7 +396,7 @@ public final class ProjectViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Rotoscoping Reference & Magic Cut AI
+    // MARK: - Rotoscoping & Magic Cut
     public func setRotoscopingReference(image: UIImage, opacity: Float = 0.45) {
         guard let frame = project.currentFrame else { return }
         frame.referenceImage = image
@@ -243,11 +428,11 @@ public final class ProjectViewModel: ObservableObject {
     // MARK: - Export Movie & GIF
     public func exportVideoMp4() {
         isExporting = true
-        exportProgress = "Đang khởi tạo video H.264..."
+        exportProgress = loc.t("rendering")
         MovieExporter.exportMp4(
             project: project,
             onProgress: { [weak self] current, total in
-                self?.exportProgress = "Đang kết xuất khung hình \(current) / \(total)..."
+                self?.exportProgress = "Khung hình \(current) / \(total)..."
             },
             completion: { [weak self] result in
                 self?.isExporting = false
@@ -255,7 +440,7 @@ public final class ProjectViewModel: ObservableObject {
                 case .success(let url):
                     self?.exportedFileURL = url
                     self?.showShareSheet = true
-                    self?.showToast("Xuất video MP4 thành công!")
+                    self?.showToast(self?.loc.t("export_success") ?? "Export success!")
                 case .failure(let err):
                     self?.showToast("Lỗi xuất video: \(err.localizedDescription)")
                 }
@@ -265,11 +450,11 @@ public final class ProjectViewModel: ObservableObject {
 
     public func exportAnimatedGif() {
         isExporting = true
-        exportProgress = "Đang mã hóa ảnh động GIF..."
+        exportProgress = loc.t("rendering")
         MovieExporter.exportGif(
             project: project,
             onProgress: { [weak self] current, total in
-                self?.exportProgress = "Đang nén khung hình \(current) / \(total)..."
+                self?.exportProgress = "Khung hình \(current) / \(total)..."
             },
             completion: { [weak self] result in
                 self?.isExporting = false
@@ -277,7 +462,7 @@ public final class ProjectViewModel: ObservableObject {
                 case .success(let url):
                     self?.exportedFileURL = url
                     self?.showShareSheet = true
-                    self?.showToast("Xuất ảnh GIF thành công!")
+                    self?.showToast(self?.loc.t("export_success") ?? "Export success!")
                 case .failure(let err):
                     self?.showToast("Lỗi xuất GIF: \(err.localizedDescription)")
                 }
@@ -287,12 +472,12 @@ public final class ProjectViewModel: ObservableObject {
 
     public func exportPngSequence(transparent: Bool = true) {
         isExporting = true
-        exportProgress = "Đang lưu chuỗi ảnh PNG..."
+        exportProgress = loc.t("rendering")
         MovieExporter.exportPngSequence(
             project: project,
             transparent: transparent,
             onProgress: { [weak self] current, total in
-                self?.exportProgress = "Đang lưu ảnh \(current) / \(total)..."
+                self?.exportProgress = "Ảnh \(current) / \(total)..."
             },
             completion: { [weak self] result in
                 self?.isExporting = false
@@ -300,7 +485,7 @@ public final class ProjectViewModel: ObservableObject {
                 case .success(let dir):
                     self?.exportedFileURL = dir
                     self?.showShareSheet = true
-                    self?.showToast("Xuất chuỗi ảnh PNG thành công!")
+                    self?.showToast(self?.loc.t("export_success") ?? "Export success!")
                 case .failure(let err):
                     self?.showToast("Lỗi xuất PNG: \(err.localizedDescription)")
                 }

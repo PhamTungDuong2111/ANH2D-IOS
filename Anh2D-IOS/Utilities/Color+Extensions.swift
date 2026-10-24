@@ -2,14 +2,21 @@ import SwiftUI
 import UIKit
 
 public extension Color {
-    static let flipaOrange = Color(hex: "#FF5722")
+    // FlipaClip Brand Coral & Accents (matching ADR design system)
+    static let flipaCoral = Color(hex: "#FF5353")
+    static let flipaOrange = Color(hex: "#FF5353") // Alias for backward compatibility
     static let flipaDarkBg = Color(hex: "#121418")
-    static let flipaPanelDark = Color(hex: "#1A1D24")
-    static let flipaPanelElevated = Color(hex: "#242832")
-    static let flipaNeonGreen = Color(hex: "#00E676")
+    static let flipaSurface = Color(hex: "#1B1E24")
+    static let flipaPanelDark = Color(hex: "#1B1E24")
+    static let flipaPanelElevated = Color(hex: "#242933")
+    static let flipaHover = Color(hex: "#2F3542")
+    static let flipaGreen = Color(hex: "#34C759")
+    static let flipaNeonGreen = Color(hex: "#34C759")
+    static let flipaBlue = Color(hex: "#0084FF")
     static let flipaCyan = Color(hex: "#00E5FF")
-    static let flipaYellow = Color(hex: "#FFD600")
-    static let flipaRed = Color(hex: "#FF1744")
+    static let flipaYellow = Color(hex: "#FFCC00")
+    static let flipaRed = Color(hex: "#FF3B30")
+    static let flipaBorder = Color.white.opacity(0.08)
 
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
@@ -38,6 +45,13 @@ public extension Color {
 }
 
 public extension UIColor {
+    static let flipaCoral = UIColor(hex: "#FF5353")!
+    static let flipaDarkBg = UIColor(hex: "#121418")!
+    static let flipaSurface = UIColor(hex: "#1B1E24")!
+    static let flipaPanelElevated = UIColor(hex: "#242933")!
+    static let flipaHover = UIColor(hex: "#2F3542")!
+    static let flipaGreen = UIColor(hex: "#34C759")!
+
     convenience init?(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         var int: UInt64 = 0

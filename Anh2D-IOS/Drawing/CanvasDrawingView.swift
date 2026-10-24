@@ -21,6 +21,7 @@ public final class CanvasDrawingView: UIView {
     // Lasso and Ruler
     public let lassoManager = LassoManager()
     public let rulerOverlay = RulerOverlay()
+    public var isGridVisible: Bool = false
 
     // Onion Skin
     public var isOnionSkinEnabled: Bool = true
@@ -172,6 +173,11 @@ public final class CanvasDrawingView: UIView {
                 lassoManager.startSelection(at: canvasPt)
                 setNeedsDisplay()
             }
+            return
+        }
+
+        if currentTool == .eyedropper {
+            sampleColor(at: canvasPt)
             return
         }
 
@@ -425,6 +431,29 @@ public final class CanvasDrawingView: UIView {
         onProjectChanged?()
     }
 
+    private func sampleColor(at point: CGPoint) {
+        guard let currentFrame = project.currentFrame else { return }
+        let composite = currentFrame.renderComposite(layers: project.layers, canvasSize: project.canvasSize, transparent: false)
+        guard let cgImage = composite.cgImage else { return }
+        let px = Int(point.x)
+        let py = Int(point.y)
+        guard px >= 0, px < cgImage.width, py >= 0, py < cgImage.height else { return }
+
+        guard let data = cgImage.dataProvider?.data,
+              let ptr = CFDataGetBytePtr(data) else { return }
+        let bytesPerPixel = cgImage.bitsPerPixel / 8
+        let bytesPerRow = cgImage.bytesPerRow
+        let offset = py * bytesPerRow + px * bytesPerPixel
+
+        let r = CGFloat(ptr[offset]) / 255.0
+        let g = CGFloat(ptr[offset + 1]) / 255.0
+        let b = CGFloat(ptr[offset + 2]) / 255.0
+        self.brushColor = UIColor(red: r, green: g, blue: b, alpha: 1.0)
+        self.currentTool = .pen
+        setNeedsDisplay()
+        onProjectChanged?()
+    }
+
     private func applyFloodFill(at point: CGPoint) {
         guard let layer = project.activeLayer, !layer.isLocked, let frame = project.currentFrame else { return }
         saveUndoSnapshot()
@@ -567,6 +596,28 @@ public final class CanvasDrawingView: UIView {
         lassoManager.drawOverlay(in: context)
         rulerOverlay.draw(in: context)
 
+        // 6b. Alignment Grid Overlay
+        if isGridVisible {
+            context.saveGState()
+            context.setStrokeColor(project.isDarkMode ? UIColor(white: 1.0, alpha: 0.12).cgColor : UIColor(white: 0.0, alpha: 0.12).cgColor)
+            context.setLineWidth(1.0 / scaleFactor)
+            let step: CGFloat = 40.0
+            var x: CGFloat = 0
+            while x <= cw {
+                context.move(to: CGPoint(x: x, y: 0))
+                context.addLine(to: CGPoint(x: x, y: ch))
+                x += step
+            }
+            var y: CGFloat = 0
+            while y <= ch {
+                context.move(to: CGPoint(x: 0, y: y))
+                context.addLine(to: CGPoint(x: cw, y: y))
+                y += step
+            }
+            context.strokePath()
+            context.restoreGState()
+        }
+
         // 7. Artboard Border & Dimension indicator
         context.setStrokeColor(project.isDarkMode ? UIColor(white: 1.0, alpha: 0.25).cgColor : UIColor(white: 0.0, alpha: 0.25).cgColor)
         context.setLineWidth(2.0 / scaleFactor)
@@ -585,6 +636,7 @@ public struct CanvasViewRepresentable: UIViewRepresentable {
     @Binding public var brushSize: CGFloat
     @Binding public var brushOpacity: CGFloat
     @Binding public var isOnionSkinEnabled: Bool
+    @Binding public var isGridVisible: Bool
     @Binding public var rulerType: RulerType
 
     public let drawingView: CanvasDrawingView
@@ -597,6 +649,7 @@ public struct CanvasViewRepresentable: UIViewRepresentable {
         brushSize: Binding<CGFloat>,
         brushOpacity: Binding<CGFloat>,
         isOnionSkinEnabled: Binding<Bool>,
+        isGridVisible: Binding<Bool>,
         rulerType: Binding<RulerType>,
         drawingView: CanvasDrawingView
     ) {
@@ -607,6 +660,7 @@ public struct CanvasViewRepresentable: UIViewRepresentable {
         self._brushSize = brushSize
         self._brushOpacity = brushOpacity
         self._isOnionSkinEnabled = isOnionSkinEnabled
+        self._isGridVisible = isGridVisible
         self._rulerType = rulerType
         self.drawingView = drawingView
     }
@@ -624,6 +678,7 @@ public struct CanvasViewRepresentable: UIViewRepresentable {
         uiView.brushSize = brushSize
         uiView.brushOpacity = brushOpacity
         uiView.isOnionSkinEnabled = isOnionSkinEnabled
+        uiView.isGridVisible = isGridVisible
         uiView.rulerOverlay.rulerType = rulerType
         uiView.setNeedsDisplay()
     }

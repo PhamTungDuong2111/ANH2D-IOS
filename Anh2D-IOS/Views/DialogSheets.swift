@@ -1,6 +1,578 @@
 import SwiftUI
 import PhotosUI
 
+// MARK: - Projects Gallery Sheet (matching ADR #projects-gallery-modal)
+public struct ProjectsGallerySheet: View {
+    @ObservedObject public var viewModel: ProjectViewModel
+    @ObservedObject private var loc = LocalizationManager.shared
+    @Environment(\.presentationMode) var presentationMode
+
+    public var body: some View {
+        NavigationView {
+            ScrollView {
+                VStack(spacing: 16) {
+                    // New Project & Samples Bar
+                    HStack(spacing: 8) {
+                        Button(action: {
+                            viewModel.showNewProjectSheet = true
+                        }) {
+                            HStack(spacing: 6) {
+                                Image(systemName: "plus.circle.fill")
+                                    .font(.system(size: 15, weight: .bold))
+                                Text(loc.t("new_project"))
+                                    .font(.system(size: 13, weight: .bold))
+                            }
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 10)
+                            .background(Color.flipaCoral)
+                            .cornerRadius(10)
+                            .shadow(color: Color.flipaCoral.opacity(0.3), radius: 4)
+                        }
+
+                        Spacer()
+
+                        // Sample Projects Quick Loaders
+                        Button(action: {
+                            viewModel.loadSampleBall()
+                        }) {
+                            Text("⚾️ " + loc.t("sample_bouncing_ball"))
+                                .font(.system(size: 11, weight: .bold))
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 8)
+                                .background(viewModel.project.isDarkMode ? Color.flipaPanelElevated : Color(hex: "#F1F5F9"))
+                                .foregroundColor(viewModel.project.isDarkMode ? .white : .black)
+                                .cornerRadius(8)
+                        }
+
+                        Button(action: {
+                            viewModel.loadSampleStickman()
+                        }) {
+                            Text("🏃 " + loc.t("sample_stickman"))
+                                .font(.system(size: 11, weight: .bold))
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 8)
+                                .background(viewModel.project.isDarkMode ? Color.flipaPanelElevated : Color(hex: "#F1F5F9"))
+                                .foregroundColor(viewModel.project.isDarkMode ? .white : .black)
+                                .cornerRadius(8)
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, 10)
+
+                    // Projects List Grid
+                    LazyVStack(spacing: 12) {
+                        ForEach(viewModel.projectsList) { proj in
+                            projectCard(for: proj)
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+                .padding(.bottom, 20)
+            }
+            .navigationTitle(loc.t("my_projects"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(loc.t("done")) {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                    .foregroundColor(Color.flipaCoral)
+                    .font(.system(size: 15, weight: .bold))
+                }
+            }
+        }
+    }
+
+    private func projectCard(for proj: Project) -> some View {
+        let isCurrent = (proj.id == viewModel.project.id)
+        return HStack(spacing: 12) {
+            // First frame thumbnail
+            ZStack {
+                if let firstFrame = proj.frames.first {
+                    Image(uiImage: FrameThumbnailRenderer.renderThumbnail(for: firstFrame, project: proj))
+                        .resizable()
+                        .aspectRatio(16/9, contentMode: .fit)
+                        .frame(width: 90, height: 56)
+                        .background(Color.white)
+                        .cornerRadius(8)
+                } else {
+                    Color.white
+                        .frame(width: 90, height: 56)
+                        .cornerRadius(8)
+                }
+            }
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(isCurrent ? Color.flipaCoral : Color.gray.opacity(0.3), lineWidth: isCurrent ? 2.5 : 1)
+            )
+
+            // Info
+            VStack(alignment: .leading, spacing: 3) {
+                HStack {
+                    Text(proj.title)
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(viewModel.project.isDarkMode ? .white : .black)
+                        .lineLimit(1)
+
+                    if isCurrent {
+                        Text("Đang mở")
+                            .font(.system(size: 9, weight: .black))
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color.flipaCoral)
+                            .foregroundColor(.white)
+                            .cornerRadius(4)
+                    }
+                }
+
+                Text("\(proj.width)x\(proj.height) • \(proj.fps) FPS")
+                    .font(.system(size: 11, design: .monospaced))
+                    .foregroundColor(.gray)
+
+                Text(String(format: loc.t("frames_count"), proj.frames.count))
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundColor(Color.flipaCoral)
+            }
+
+            Spacer()
+
+            // Actions
+            HStack(spacing: 6) {
+                if !isCurrent {
+                    Button(action: {
+                        viewModel.switchProject(to: proj)
+                    }) {
+                        Text(loc.t("open_project"))
+                            .font(.system(size: 11, weight: .bold))
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 6)
+                            .background(Color.flipaCoral)
+                            .foregroundColor(.white)
+                            .cornerRadius(6)
+                    }
+                }
+
+                Button(action: {
+                    viewModel.duplicateProject(target: proj)
+                }) {
+                    Image(systemName: "doc.on.doc")
+                        .font(.system(size: 12))
+                        .frame(width: 30, height: 30)
+                        .background(viewModel.project.isDarkMode ? Color.flipaPanelElevated : Color(hex: "#F1F5F9"))
+                        .foregroundColor(viewModel.project.isDarkMode ? .white : .black)
+                        .cornerRadius(6)
+                }
+
+                Button(action: {
+                    viewModel.deleteProject(target: proj)
+                }) {
+                    Image(systemName: "trash")
+                        .font(.system(size: 12))
+                        .frame(width: 30, height: 30)
+                        .background(viewModel.project.isDarkMode ? Color.flipaPanelElevated : Color(hex: "#F1F5F9"))
+                        .foregroundColor(Color.flipaRed)
+                        .cornerRadius(6)
+                }
+            }
+        }
+        .padding(10)
+        .background(viewModel.project.isDarkMode ? Color.flipaSurface : Color.white)
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(isCurrent ? Color.flipaCoral.opacity(0.5) : (viewModel.project.isDarkMode ? Color.flipaBorder : Color.black.opacity(0.06)), lineWidth: 1)
+        )
+        .shadow(color: Color.black.opacity(0.06), radius: 4, y: 2)
+    }
+}
+
+// MARK: - New Project Sheet (matching ADR #new-project-modal)
+public struct NewProjectSheet: View {
+    @ObservedObject public var viewModel: ProjectViewModel
+    @ObservedObject private var loc = LocalizationManager.shared
+    @Environment(\.presentationMode) var presentationMode
+
+    @State private var projTitle: String = "Hoạt hình mới"
+    @State private var selectedPreset: CanvasPreset = .youtube16_9
+    @State private var fps: Int = 12
+    @State private var bgHex: String = "#FFFFFF"
+
+    public var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text(loc.t("project_title"))) {
+                    TextField(loc.t("project_title_placeholder"), text: $projTitle)
+                }
+
+                Section(header: Text(loc.t("choose_canvas"))) {
+                    Picker("Preset", selection: $selectedPreset) {
+                        Text(loc.t("canvas_yt")).tag(CanvasPreset.youtube16_9)
+                        Text(loc.t("canvas_tiktok")).tag(CanvasPreset.tiktok9_16)
+                        Text(loc.t("canvas_insta")).tag(CanvasPreset.instagram1_1)
+                        Text(loc.t("canvas_standard")).tag(CanvasPreset.standard4_3)
+                    }
+                    .pickerStyle(.inline)
+                }
+
+                Section(header: Text(loc.t("fps"))) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack {
+                            Text(String(format: loc.t("current_fps"), fps))
+                                .font(.system(size: 13, weight: .bold))
+                                .foregroundColor(Color.flipaCoral)
+                            Spacer()
+                        }
+                        Slider(value: Binding(
+                            get: { Double(fps) },
+                            set: { fps = Int($0) }
+                        ), in: 1...24, step: 1)
+                        .accentColor(Color.flipaCoral)
+
+                        Text(loc.t("fps_hint"))
+                            .font(.system(size: 11))
+                            .foregroundColor(.gray)
+                    }
+                }
+
+                Section(header: Text(loc.t("choose_bg"))) {
+                    Picker("Nền", selection: $bgHex) {
+                        Text(loc.t("bg_white")).tag("#FFFFFF")
+                        Text(loc.t("bg_paper")).tag("#FFFDF7")
+                        Text(loc.t("bg_dark")).tag("#1E293B")
+                        Text(loc.t("bg_chalkboard")).tag("#1B4D3E")
+                    }
+                    .pickerStyle(.menu)
+                }
+
+                Section {
+                    Button(action: {
+                        let finalTitle = projTitle.trimmingCharacters(in: .whitespaces).isEmpty ? "Dự án mới" : projTitle
+                        viewModel.createNewProject(title: finalTitle, preset: selectedPreset, fps: fps, bgHex: bgHex)
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        HStack {
+                            Spacer()
+                            Text(loc.t("create_project"))
+                                .font(.system(size: 15, weight: .bold))
+                                .foregroundColor(.white)
+                            Spacer()
+                        }
+                        .padding(.vertical, 8)
+                        .background(Color.flipaCoral)
+                        .cornerRadius(10)
+                    }
+                }
+            }
+            .navigationTitle(loc.t("new_project"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(loc.t("cancel")) {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Audio & Voiceover Modal (matching ADR #audio-modal)
+public struct AudioModalSheet: View {
+    @ObservedObject public var viewModel: ProjectViewModel
+    @ObservedObject private var loc = LocalizationManager.shared
+    @Environment(\.presentationMode) var presentationMode
+    @State private var showAiMaker: Bool = false
+    @State private var aiScript: String = ""
+
+    public var body: some View {
+        NavigationView {
+            VStack(spacing: 24) {
+                Spacer()
+
+                // Big Round Microphone Button (72x72)
+                Button(action: {
+                    if let firstTrack = viewModel.project.audioTracks.first {
+                        viewModel.toggleVoiceRecording(for: firstTrack)
+                    } else {
+                        viewModel.addAudioTrack()
+                        if let first = viewModel.project.audioTracks.first {
+                            viewModel.toggleVoiceRecording(for: first)
+                        }
+                    }
+                }) {
+                    ZStack {
+                        Circle()
+                            .fill(LinearGradient(
+                                colors: [Color.flipaCoral, Color(hex: "#FF3B30")],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ))
+                            .frame(width: 80, height: 80)
+                            .shadow(color: Color.flipaCoral.opacity(0.45), radius: viewModel.isRecordingMicLive ? 16 : 8)
+                            .scaleEffect(viewModel.isRecordingMicLive ? 1.1 : 1.0)
+                            .animation(viewModel.isRecordingMicLive ? Animation.easeInOut(duration: 0.6).repeatForever(autoreverses: true) : .default, value: viewModel.isRecordingMicLive)
+
+                        Image(systemName: viewModel.isRecordingMicLive ? "stop.fill" : "mic.fill")
+                            .font(.system(size: 32, weight: .bold))
+                            .foregroundColor(.white)
+                    }
+                }
+
+                // Mic Status Label
+                Text(viewModel.isRecordingMicLive ? loc.t("recording_live") : loc.t("record_voice"))
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(viewModel.project.isDarkMode ? .white : .black)
+
+                // Divider OR
+                HStack(spacing: 12) {
+                    Rectangle().frame(height: 1).foregroundColor(Color.gray.opacity(0.3))
+                    Text("HOẶC").font(.system(size: 11, weight: .bold)).foregroundColor(.gray)
+                    Rectangle().frame(height: 1).foregroundColor(Color.gray.opacity(0.3))
+                }
+                .padding(.horizontal, 30)
+
+                // Audio File Picker Button
+                Button(action: {
+                    viewModel.showToast("Chức năng tải file đang khả dụng qua Files app")
+                }) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "square.and.arrow.down.fill")
+                        Text(loc.t("upload_audio"))
+                    }
+                    .font(.system(size: 13, weight: .semibold))
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .background(viewModel.project.isDarkMode ? Color.flipaPanelElevated : Color(hex: "#F1F5F9"))
+                    .foregroundColor(viewModel.project.isDarkMode ? .white : .black)
+                    .cornerRadius(10)
+                }
+
+                // AI Voice Maker toggle button
+                Button(action: {
+                    showAiMaker.toggle()
+                }) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "sparkles")
+                            .foregroundColor(Color.flipaCyan)
+                        Text("Tạo giọng đọc AI Text-to-Speech")
+                            .font(.system(size: 12, weight: .bold))
+                    }
+                    .foregroundColor(Color.flipaCyan)
+                }
+
+                if showAiMaker {
+                    VStack(spacing: 8) {
+                        TextField("Nhập lời thoại cần AI lồng tiếng...", text: $aiScript)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .padding(.horizontal, 20)
+
+                        Button(action: {
+                            if let first = viewModel.project.audioTracks.first {
+                                viewModel.generateAiVoice(script: aiScript, for: first)
+                            }
+                        }) {
+                            Text("Tạo giọng nói AI")
+                                .font(.system(size: 12, weight: .bold))
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 6)
+                                .background(Color.flipaCyan)
+                                .foregroundColor(.black)
+                                .cornerRadius(6)
+                        }
+                    }
+                }
+
+                // Delete Audio button
+                Button(action: {
+                    viewModel.removeAudioFromProject()
+                }) {
+                    Text(loc.t("delete_audio"))
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(Color.flipaRed)
+                }
+
+                Spacer()
+            }
+            .padding()
+            .navigationTitle(loc.t("audio_title"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(loc.t("done")) {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                    .foregroundColor(Color.flipaCoral)
+                    .font(.system(size: 15, weight: .bold))
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Settings & Animation Guide Modal (matching ADR #settings-modal)
+public struct SettingsModalSheet: View {
+    @ObservedObject public var viewModel: ProjectViewModel
+    @ObservedObject private var loc = LocalizationManager.shared
+    @Environment(\.presentationMode) var presentationMode
+
+    public var body: some View {
+        NavigationView {
+            Form {
+                // Language Selector
+                Section(header: Text(loc.t("language"))) {
+                    HStack(spacing: 10) {
+                        Button(action: {
+                            loc.currentLanguage = .vi
+                        }) {
+                            HStack {
+                                Text("🇻🇳 Tiếng Việt")
+                                    .font(.system(size: 13, weight: .bold))
+                                Spacer()
+                                if loc.currentLanguage == .vi {
+                                    Image(systemName: "checkmark").foregroundColor(Color.flipaCoral)
+                                }
+                            }
+                            .padding(.vertical, 4)
+                        }
+                        .foregroundColor(loc.currentLanguage == .vi ? Color.flipaCoral : (viewModel.project.isDarkMode ? .white : .black))
+
+                        Divider()
+
+                        Button(action: {
+                            loc.currentLanguage = .en
+                        }) {
+                            HStack {
+                                Text("🇬🇧 English")
+                                    .font(.system(size: 13, weight: .bold))
+                                Spacer()
+                                if loc.currentLanguage == .en {
+                                    Image(systemName: "checkmark").foregroundColor(Color.flipaCoral)
+                                }
+                            }
+                            .padding(.vertical, 4)
+                        }
+                        .foregroundColor(loc.currentLanguage == .en ? Color.flipaCoral : (viewModel.project.isDarkMode ? .white : .black))
+                    }
+                }
+
+                // Grid Overlay Toggle
+                Section(header: Text("Lưới Căn Chỉnh")) {
+                    Toggle(loc.t("grid_toggle"), isOn: Binding(
+                        get: { viewModel.isGridVisible },
+                        set: {
+                            viewModel.isGridVisible = $0
+                            viewModel.drawingView.isGridVisible = $0
+                            viewModel.drawingView.setNeedsDisplay()
+                        }
+                    ))
+                }
+
+                // Onion Skin Settings
+                Section(header: Text(loc.t("onion_settings"))) {
+                    Stepper("Số khung trước (Đỏ): \(viewModel.onionSkinFramesBefore)", value: $viewModel.onionSkinFramesBefore, in: 1...5)
+                    Stepper("Số khung sau (Xanh): \(viewModel.onionSkinFramesAfter)", value: $viewModel.onionSkinFramesAfter, in: 1...5)
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack {
+                            Text("Độ mờ đục:")
+                            Spacer()
+                            Text("\(Int(viewModel.onionSkinAlpha * 100))%")
+                                .foregroundColor(Color.flipaCoral)
+                        }
+                        Slider(value: $viewModel.onionSkinAlpha, in: 0.1...0.8, step: 0.05)
+                            .accentColor(Color.flipaCoral)
+                    }
+                }
+
+                // Animation Tutorial / Guide (matching ADR Guide 5 steps)
+                Section(header: Text(loc.t("help_guide"))) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(loc.t("guide_intro"))
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(Color.flipaCoral)
+                        Text(loc.t("guide_step1")).font(.system(size: 11))
+                        Text(loc.t("guide_step2")).font(.system(size: 11))
+                        Text(loc.t("guide_step3")).font(.system(size: 11))
+                        Text(loc.t("guide_step4")).font(.system(size: 11))
+                        Text(loc.t("guide_step5")).font(.system(size: 11))
+                    }
+                    .padding(.vertical, 4)
+                }
+            }
+            .navigationTitle(loc.t("settings_title"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(loc.t("done")) {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                    .foregroundColor(Color.flipaCoral)
+                    .font(.system(size: 15, weight: .bold))
+                }
+            }
+        }
+    }
+}
+
+// MARK: - FPS Modal (matching ADR #fps-modal)
+public struct FpsModalSheet: View {
+    @ObservedObject public var viewModel: ProjectViewModel
+    @ObservedObject private var loc = LocalizationManager.shared
+    @Environment(\.presentationMode) var presentationMode
+
+    public var body: some View {
+        NavigationView {
+            VStack(spacing: 20) {
+                VStack(spacing: 8) {
+                    Text("\(viewModel.project.fps) FPS")
+                        .font(.system(size: 40, weight: .black, design: .monospaced))
+                        .foregroundColor(Color.flipaCoral)
+
+                    Text(loc.t("fps_hint"))
+                        .font(.system(size: 12))
+                        .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                }
+                .padding(.top, 20)
+
+                Slider(value: Binding(
+                    get: { Double(viewModel.project.fps) },
+                    set: { viewModel.project.fps = Int($0) }
+                ), in: 1...30, step: 1)
+                .accentColor(Color.flipaCoral)
+                .padding(.horizontal, 24)
+
+                Spacer()
+
+                Button(action: {
+                    presentationMode.wrappedValue.dismiss()
+                }) {
+                    Text(loc.t("done"))
+                        .font(.system(size: 14, weight: .bold))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(Color.flipaCoral)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
+                .padding(.horizontal, 24)
+                .padding(.bottom, 16)
+            }
+            .navigationTitle(loc.t("fps"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(loc.t("cancel")) {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+
 // MARK: - Onion Skin Settings Sheet
 public struct OnionSkinSettingsSheet: View {
     @ObservedObject public var viewModel: ProjectViewModel
@@ -24,10 +596,10 @@ public struct OnionSkinSettingsSheet: View {
                             Spacer()
                             Text("\(Int(viewModel.onionSkinAlpha * 100))%")
                                 .fontWeight(.bold)
-                                .foregroundColor(Color.flipaOrange)
+                                .foregroundColor(Color.flipaCoral)
                         }
                         Slider(value: $viewModel.onionSkinAlpha, in: 0.1...0.8, step: 0.05)
-                            .accentColor(Color.flipaOrange)
+                            .accentColor(Color.flipaCoral)
                     }
                 }
             }
@@ -43,7 +615,7 @@ public struct OnionSkinSettingsSheet: View {
                         presentationMode.wrappedValue.dismiss()
                     }
                     .font(.system(size: 15, weight: .bold))
-                    .foregroundColor(Color.flipaOrange)
+                    .foregroundColor(Color.flipaCoral)
                 }
             }
         }
@@ -65,7 +637,7 @@ public struct ShapePickerSheet: View {
                     HStack(spacing: 12) {
                         Image(systemName: shape.iconName)
                             .font(.system(size: 20))
-                            .foregroundColor(Color.flipaOrange)
+                            .foregroundColor(Color.flipaCoral)
                             .frame(width: 32)
 
                         Text(shape.displayName)
@@ -75,7 +647,7 @@ public struct ShapePickerSheet: View {
 
                         if viewModel.currentShape == shape {
                             Image(systemName: "checkmark")
-                                .foregroundColor(Color.flipaOrange)
+                                .foregroundColor(Color.flipaCoral)
                         }
                     }
                     .padding(.vertical, 4)
@@ -102,7 +674,7 @@ public struct AllToolsPickerSheet: View {
                     HStack(spacing: 12) {
                         Image(systemName: tool.iconName)
                             .font(.system(size: 20))
-                            .foregroundColor(Color.flipaOrange)
+                            .foregroundColor(Color.flipaCoral)
                             .frame(width: 32)
 
                         Text(tool.displayName)
@@ -112,7 +684,7 @@ public struct AllToolsPickerSheet: View {
 
                         if viewModel.currentTool == tool {
                             Image(systemName: "checkmark")
-                                .foregroundColor(Color.flipaOrange)
+                                .foregroundColor(Color.flipaCoral)
                         }
                     }
                     .padding(.vertical, 4)
@@ -140,7 +712,7 @@ public struct LayerFXSheet: View {
                                 Spacer()
                                 Text("\(Int(layer.glowRadius)) px")
                                     .fontWeight(.bold)
-                                    .foregroundColor(Color.flipaOrange)
+                                    .foregroundColor(Color.flipaCoral)
                             }
                             Slider(
                                 value: Binding(
@@ -155,7 +727,7 @@ public struct LayerFXSheet: View {
                                 in: 0...30,
                                 step: 1
                             )
-                            .accentColor(Color.flipaOrange)
+                            .accentColor(Color.flipaCoral)
                         }
                     }
 
@@ -192,7 +764,7 @@ public struct LayerFXSheet: View {
                                 Spacer()
                                 Text(layer.pixelEffectSize == 1 ? "Tắt" : "\(layer.pixelEffectSize)x")
                                     .fontWeight(.bold)
-                                    .foregroundColor(Color.flipaNeonGreen)
+                                    .foregroundColor(Color.flipaGreen)
                             }
                             Picker("Pixel Size", selection: Binding(
                                 get: { layer.pixelEffectSize },
@@ -262,7 +834,7 @@ public struct TextPromptSheet: View {
                         presentationMode.wrappedValue.dismiss()
                     }
                     .font(.system(size: 15, weight: .bold))
-                    .foregroundColor(Color.flipaOrange)
+                    .foregroundColor(Color.flipaCoral)
                 }
             }
             .navigationTitle("Chèn Văn Bản")
@@ -339,7 +911,7 @@ public struct LoopSequenceSheet: View {
                         presentationMode.wrappedValue.dismiss()
                     }
                     .font(.system(size: 15, weight: .bold))
-                    .foregroundColor(Color.flipaOrange)
+                    .foregroundColor(Color.flipaCoral)
                 }
             }
             .navigationTitle("Lặp Chuỗi Khung Hình")
@@ -357,7 +929,7 @@ public struct LoopSequenceSheet: View {
 
 // MARK: - Photo Picker with Rotoscoping & Magic Cut AI
 public struct PhotoPickerView: UIViewControllerRepresentable {
-    public let onImagePicked: (UIImage, Bool) -> Void // (image, isMagicCut)
+    public let onImagePicked: (UIImage, Bool) -> Void
 
     public func makeCoordinator() -> Coordinator {
         Coordinator(self)

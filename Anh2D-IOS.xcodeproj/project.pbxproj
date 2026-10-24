@@ -39,6 +39,7 @@
 		FF01001E2D00000100000001 /* ProjectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF02001F2D00000100000001 /* ProjectViewModel.swift */; };
 		FF01001F2D00000100000001 /* Color+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0200202D00000100000001 /* Color+Extensions.swift */; };
 		FF0100202D00000100000001 /* UIImage+Effects.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0200212D00000100000001 /* UIImage+Effects.swift */; };
+		FF0100222D00000100000001 /* LocalizationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0200222D00000100000001 /* LocalizationManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -76,6 +77,7 @@
 		FF02001F2D00000100000001 /* ProjectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectViewModel.swift; sourceTree = "<group>"; };
 		FF0200202D00000100000001 /* Color+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extensions.swift"; sourceTree = "<group>"; };
 		FF0200212D00000100000001 /* UIImage+Effects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Effects.swift"; sourceTree = "<group>"; };
+		FF0200222D00000100000001 /* LocalizationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LocalizationManager.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -221,6 +223,7 @@
 			children = (
 				FF0200202D00000100000001 /* Color+Extensions.swift */,
 				FF0200212D00000100000001 /* UIImage+Effects.swift */,
+				FF0200222D00000100000001 /* LocalizationManager.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -325,6 +328,7 @@
 				FF01001E2D00000100000001 /* ProjectViewModel.swift in Sources */,
 				FF01001F2D00000100000001 /* Color+Extensions.swift in Sources */,
 				FF0100202D00000100000001 /* UIImage+Effects.swift in Sources */,
+				FF0100222D00000100000001 /* LocalizationManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

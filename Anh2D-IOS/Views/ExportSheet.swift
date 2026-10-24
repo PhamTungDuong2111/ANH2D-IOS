@@ -3,35 +3,83 @@ import UIKit
 
 public struct ExportSheet: View {
     @ObservedObject public var viewModel: ProjectViewModel
+    @ObservedObject private var loc = LocalizationManager.shared
     @Environment(\.presentationMode) var presentationMode
-    @State private var transparentPng: Bool = true
+
+    enum ExportFormat: String, CaseIterable {
+        case gif = "gif"
+        case video = "video"
+        case png = "png"
+    }
+
+    @State private var selectedFormat: ExportFormat = .gif
+    @State private var watermark: Bool = true
 
     public var body: some View {
         NavigationView {
-            VStack(spacing: 20) {
-                // Animation Overview
-                VStack(spacing: 8) {
-                    Image(systemName: "film.fill")
-                        .font(.system(size: 40))
-                        .foregroundColor(Color.flipaOrange)
+            VStack(spacing: 16) {
+                // Format Selection Grid (matching ADR .presets-grid)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(loc.t("format"))
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundColor(viewModel.project.isDarkMode ? .white : .black)
 
-                    Text(viewModel.project.title)
-                        .font(.system(size: 18, weight: .bold))
-
-                    Text("\(viewModel.project.frames.count) khung hình • \(viewModel.project.fps) FPS • \(viewModel.project.width)x\(viewModel.project.height) px")
-                        .font(.system(size: 12))
-                        .foregroundColor(.gray)
+                    HStack(spacing: 8) {
+                        formatCard(
+                            format: .gif,
+                            title: loc.t("format_gif"),
+                            subtitle: loc.t("format_gif_sub"),
+                            icon: "photo.stack.fill"
+                        )
+                        formatCard(
+                            format: .video,
+                            title: loc.t("format_video"),
+                            subtitle: loc.t("format_video_sub"),
+                            icon: "video.fill"
+                        )
+                        formatCard(
+                            format: .png,
+                            title: loc.t("format_png"),
+                            subtitle: loc.t("format_png_sub"),
+                            icon: "folder.fill"
+                        )
+                    }
                 }
+                .padding(.horizontal)
                 .padding(.top, 10)
 
-                if viewModel.isExporting {
-                    VStack(spacing: 12) {
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: Color.flipaOrange))
-                            .scaleEffect(1.3)
-                        Text(viewModel.exportProgress)
+                // Watermark Checkbox (matching ADR #export-watermark)
+                Toggle(isOn: $watermark) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "checkmark.seal.fill")
+                            .foregroundColor(Color.flipaCoral)
+                        Text(loc.t("watermark"))
                             .font(.system(size: 13, weight: .medium))
-                            .foregroundColor(Color.flipaOrange)
+                    }
+                }
+                .padding(.horizontal)
+
+                // Project specs summary
+                HStack(spacing: 12) {
+                    Label("\(viewModel.project.frames.count) frames", systemImage: "film")
+                    Label("\(viewModel.project.fps) FPS", systemImage: "speedometer")
+                    Label("\(viewModel.project.width)x\(viewModel.project.height)", systemImage: "aspectratio")
+                }
+                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                .foregroundColor(.gray)
+                .padding(.horizontal)
+
+                Spacer()
+
+                // Progress Bar (matching ADR #export-progress-container)
+                if viewModel.isExporting {
+                    VStack(spacing: 8) {
+                        Text(viewModel.exportProgress.isEmpty ? loc.t("rendering") : viewModel.exportProgress)
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(Color.flipaCoral)
+
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: Color.flipaCoral))
                     }
                     .padding()
                     .frame(maxWidth: .infinity)
@@ -40,50 +88,36 @@ public struct ExportSheet: View {
                     .padding(.horizontal)
                 }
 
-                // Export Options List
-                VStack(spacing: 12) {
-                    // MP4 Video
-                    exportOptionCard(
-                        icon: "video.fill",
-                        color: Color.flipaOrange,
-                        title: "Xuất Video MP4 (Chuẩn H.264 1080p)",
-                        subtitle: "Độ tương thích cao cho YouTube, TikTok, Facebook",
-                        action: { viewModel.exportVideoMp4() }
-                    )
-
-                    // Animated GIF
-                    exportOptionCard(
-                        icon: "photo.stack.fill",
-                        color: Color.flipaCyan,
-                        title: "Xuất Ảnh Động GIF",
-                        subtitle: "Ảnh lặp chuyển động mượt mà, dễ chia sẻ qua tin nhắn",
-                        action: { viewModel.exportAnimatedGif() }
-                    )
-
-                    // PNG Sequence
-                    VStack(spacing: 8) {
-                        exportOptionCard(
-                            icon: "folder.fill",
-                            color: Color.flipaNeonGreen,
-                            title: "Xuất Chuỗi Ảnh PNG Sequence",
-                            subtitle: "Từng khung hình sắc nét, hỗ trợ nền trong suốt",
-                            action: { viewModel.exportPngSequence(transparent: transparentPng) }
-                        )
-
-                        Toggle("Hỗ trợ nền trong suốt (Transparency)", isOn: $transparentPng)
-                            .font(.system(size: 12))
-                            .padding(.horizontal, 8)
+                // Render Action Button (matching ADR #btn-start-export)
+                Button(action: {
+                    startExport()
+                }) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "arrow.down.circle.fill")
+                            .font(.system(size: 16, weight: .bold))
+                        Text(loc.t("render_button"))
+                            .font(.system(size: 14, weight: .bold))
                     }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(LinearGradient(
+                        colors: [Color.flipaCoral, Color(hex: "#FF3B30")],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ))
+                    .foregroundColor(.white)
+                    .cornerRadius(12)
+                    .shadow(color: Color.flipaCoral.opacity(0.4), radius: 8, y: 3)
                 }
+                .disabled(viewModel.isExporting)
                 .padding(.horizontal)
-
-                Spacer()
+                .padding(.bottom, 12)
             }
-            .navigationTitle("Xuất Hoạt Hình (Export)")
+            .navigationTitle(loc.t("movie_title"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Đóng") {
+                    Button(loc.t("cancel")) {
                         presentationMode.wrappedValue.dismiss()
                     }
                 }
@@ -96,44 +130,46 @@ public struct ExportSheet: View {
         }
     }
 
-    private func exportOptionCard(
-        icon: String,
-        color: Color,
-        title: String,
-        subtitle: String,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            HStack(spacing: 14) {
+    private func formatCard(format: ExportFormat, title: String, subtitle: String, icon: String) -> some View {
+        let isSelected = (selectedFormat == format)
+        return Button(action: {
+            selectedFormat = format
+        }) {
+            VStack(alignment: .leading, spacing: 6) {
                 Image(systemName: icon)
-                    .font(.system(size: 24))
-                    .foregroundColor(color)
-                    .frame(width: 44, height: 44)
-                    .background(color.opacity(0.15))
-                    .cornerRadius(10)
-
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(title)
-                        .font(.system(size: 13, weight: .bold))
-                        .foregroundColor(viewModel.project.isDarkMode ? .white : .black)
-
-                    Text(subtitle)
-                        .font(.system(size: 11))
-                        .foregroundColor(.gray)
-                }
-
-                Spacer()
-
-                Image(systemName: "arrow.down.circle.fill")
                     .font(.system(size: 18))
-                    .foregroundColor(color)
+                    .foregroundColor(isSelected ? Color.flipaCoral : .gray)
+
+                Text(title)
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(viewModel.project.isDarkMode ? .white : .black)
+                    .lineLimit(1)
+
+                Text(subtitle)
+                    .font(.system(size: 9))
+                    .foregroundColor(.gray)
+                    .lineLimit(2)
             }
-            .padding(12)
-            .background(viewModel.project.isDarkMode ? Color.flipaPanelElevated : Color.white)
-            .cornerRadius(12)
-            .shadow(color: Color.black.opacity(0.06), radius: 4, y: 2)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(10)
+            .background(isSelected ? (viewModel.project.isDarkMode ? Color.flipaCoral.opacity(0.15) : Color(hex: "#FFF0F0")) : (viewModel.project.isDarkMode ? Color.flipaPanelElevated : Color(hex: "#F8FAFC")))
+            .cornerRadius(10)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(isSelected ? Color.flipaCoral : Color.gray.opacity(0.2), lineWidth: isSelected ? 2 : 1)
+            )
         }
-        .disabled(viewModel.isExporting)
+    }
+
+    private func startExport() {
+        switch selectedFormat {
+        case .gif:
+            viewModel.exportAnimatedGif()
+        case .video:
+            viewModel.exportVideoMp4()
+        case .png:
+            viewModel.exportPngSequence(transparent: !watermark)
+        }
     }
 }
 

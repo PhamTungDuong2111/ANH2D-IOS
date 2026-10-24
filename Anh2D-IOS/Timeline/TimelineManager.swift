@@ -5,8 +5,9 @@ import Combine
 public final class TimelineManager: ObservableObject {
     @Published public var isPlaying: Bool = false
     @Published public var isLooping: Bool = true
+    @Published public var copiedFrame: Frame? = nil
 
-    public let project: Project
+    public var project: Project
     private var timer: Timer?
     private var holdCounter: Int = 0
 
@@ -15,6 +16,13 @@ public final class TimelineManager: ObservableObject {
 
     public init(project: Project) {
         self.project = project
+    }
+
+    public func setProject(_ newProject: Project) {
+        stopPlayback()
+        self.project = newProject
+        self.holdCounter = 0
+        onFrameChanged?(project.currentFrameIndex)
     }
 
     public func startPlayback() {
@@ -95,6 +103,21 @@ public final class TimelineManager: ObservableObject {
         project.frames.insert(cloned, at: insertIndex)
         project.currentFrameIndex = insertIndex
         onFrameChanged?(project.currentFrameIndex)
+    }
+
+    public func copyCurrentFrame() {
+        guard let current = project.currentFrame else { return }
+        copiedFrame = current.clone()
+    }
+
+    public func pasteFrame() -> Bool {
+        guard let copied = copiedFrame else { return false }
+        let newFrame = copied.clone()
+        let insertIndex = min(project.currentFrameIndex + 1, project.frames.count)
+        project.frames.insert(newFrame, at: insertIndex)
+        project.currentFrameIndex = insertIndex
+        onFrameChanged?(project.currentFrameIndex)
+        return true
     }
 
     public func deleteCurrentFrame() -> Bool {

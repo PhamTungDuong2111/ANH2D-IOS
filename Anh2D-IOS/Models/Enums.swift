@@ -11,6 +11,7 @@ public enum ToolType: String, CaseIterable, Identifiable {
     case ruler = "Ruler"
     case text = "Text"
     case shapes = "Shapes"
+    case eyedropper = "Eyedropper"
     case smudge = "Smudge"
     case blur = "Blur"
 
@@ -28,6 +29,7 @@ public enum ToolType: String, CaseIterable, Identifiable {
         case .ruler: return "Thước kẻ (Ruler)"
         case .text: return "Văn bản (Text)"
         case .shapes: return "Hình khối (Shapes)"
+        case .eyedropper: return "Hút màu (Eyedropper)"
         case .smudge: return "Làm mịn (Smudge)"
         case .blur: return "Làm mờ (Blur)"
         }
@@ -45,6 +47,7 @@ public enum ToolType: String, CaseIterable, Identifiable {
         case .ruler: return "ruler.fill"
         case .text: return "textformat"
         case .shapes: return "square.on.circle"
+        case .eyedropper: return "eyedropper.halffull"
         case .smudge: return "hand.draw.fill"
         case .blur: return "camera.filters"
         }
